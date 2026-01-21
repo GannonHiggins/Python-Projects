@@ -1,9 +1,18 @@
 import pygame as pg #import pygame library
 
 
+WIDTH, HEIGHT = 1280, 720
+FPS = 60
+PLAYER_SPEED = 300
+PLAYER_RADIUS = 15
+PLAYER_COLOR = "black"
+BACKGROUND_COLOR = "gray"
+WINDOW_TITLE = "Snake"
+
 # Initialize Pygame
 pg.init()
-screen = pg.display.set_mode((1280,720)) #set the screen size
+screen = pg.display.set_mode((WIDTH, HEIGHT)) #set the screen size
+pg.display.set_caption(WINDOW_TITLE) #set the window title
 clock = pg.time.Clock() #set the clock
 running = True
 dt = 0
@@ -15,21 +24,21 @@ while running:
         if event.type == pg.QUIT:
             running = False
     
-    screen.fill("black")
-    pg.draw.circle(screen, "white", player_pos, 15)
+    screen.fill(BACKGROUND_COLOR)
+    pg.draw.circle(screen, PLAYER_COLOR, player_pos, PLAYER_RADIUS) #draw the player
 
     keys = pg.key.get_pressed()
     if keys[pg.K_w]:
-        player_pos.y -= 300 * dt
+        player_pos.y -= PLAYER_SPEED * dt
     if keys[pg.K_s]:
-        player_pos.y += 300 * dt
+        player_pos.y += PLAYER_SPEED * dt
     if keys[pg.K_a]:
-        player_pos.x -= 300 * dt
+        player_pos.x -= PLAYER_SPEED * dt
     if keys[pg.K_d]:
-        player_pos.x += 300 * dt
+        player_pos.x += PLAYER_SPEED * dt
 
     #RENDER GAME HERE
     pg.display.flip()
-    dt = clock.tick(60) / 1000 #60 FPS
+    dt = clock.tick(FPS) / 1000 #60 FPS
 
 pg.quit()

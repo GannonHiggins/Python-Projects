@@ -2,25 +2,42 @@ from tkinter import *
 
 
 expr = "" #global expression variable
+just_evaluated = False #global variable to track if we just calculated
+
 
 def button_click(key):
-    global expr
-    expr += str(key)
+    global expr, just_evaluated
+    #if we calculated and the user presses a number, start fresh
+    if just_evaluated and str(key).isdigit():
+        expr = str(key)
+        just_evaluated = False
+    #if we calculated and the user presses an operator, add the operator to the expression
+    elif just_evaluated and str(key) in ["+", "-", "*", "/"]:
+        expr = display.get() + str(key)
+        just_evaluated = False
+    else:
+        expr += str(key)
+        just_evaluated = False
     display.set(expr)
 
 def equal():
-    global expr
+    global expr, just_evaluated
+
+
     try:
         resault = str(eval(expr))
         display.set(resault)
-        expr = ""
+        expr = resault
+        just_evaluated = True
     except:
         display.set("Error")
         expr = ""
+        just_evaluated = False
 
 def clear():
     global expr
     expr = ""
+    just_evaluated = False
     display.set("")
 
 if __name__ == "__main__":

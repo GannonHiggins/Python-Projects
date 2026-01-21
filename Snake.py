@@ -8,6 +8,15 @@ PLAYER_RADIUS = 15
 PLAYER_COLOR = "black"
 BACKGROUND_COLOR = "gray"
 WINDOW_TITLE = "Snake"
+BLOCK_SIZE = 30
+GRID_COLOR = "black"
+GRID_WIDTH = 1
+
+def draw_grid():
+    for x in range(0, WIDTH, BLOCK_SIZE):
+        pg.draw.line(screen, GRID_COLOR, (x, 0), (x, HEIGHT), GRID_WIDTH)
+    for y in range(0, HEIGHT, BLOCK_SIZE):
+        pg.draw.line(screen, GRID_COLOR, (0, y), (WIDTH, y), GRID_WIDTH)
 
 # Initialize Pygame
 pg.init()
@@ -25,6 +34,7 @@ while running:
             running = False
     
     screen.fill(BACKGROUND_COLOR)
+    draw_grid()
     pg.draw.circle(screen, PLAYER_COLOR, player_pos, PLAYER_RADIUS) #draw the player
 
     keys = pg.key.get_pressed()

@@ -51,6 +51,15 @@ while running:
     if keys[pg.K_d]:
         player_pos.x += PLAYER_SPEED * dt
 
+    if player_pos.x < 0:
+        player_pos.x = WIDTH
+    if player_pos.x > WIDTH:
+        player_pos.x = 0
+    if player_pos.y < 0:
+        player_pos.y = HEIGHT
+    if player_pos.y > HEIGHT:
+        player_pos.y = 0
+
     #RENDER GAME HERE
     pg.display.flip()
     dt = clock.tick(FPS) / 1000 #60 FPS

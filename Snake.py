@@ -1,6 +1,6 @@
 import pygame as pg #import pygame library
 
-
+#Constants
 WIDTH, HEIGHT = 1280, 720
 FPS = 60
 PLAYER_SPEED = 300
@@ -12,6 +12,7 @@ BLOCK_SIZE = 30
 GRID_COLOR = "black"
 GRID_WIDTH = 1
 
+#Function to draw the grid
 def draw_grid():
     for x in range(0, WIDTH, BLOCK_SIZE):
         pg.draw.line(screen, GRID_COLOR, (x, 0), (x, HEIGHT), GRID_WIDTH)
@@ -26,8 +27,11 @@ clock = pg.time.Clock() #set the clock
 running = True
 dt = 0
 
-player_pos = pg.Vector2(screen.get_width()/2, screen.get_height()/2) #set the player position to the center of the screen
 
+#Player Position
+player_pos = pg.Vector2(screen.get_width()/2, screen.get_height()/2) 
+
+#Main Game Loop
 while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:

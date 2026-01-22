@@ -46,6 +46,7 @@ dt = 0
 #Player Position
 player_grid_x = int(screen.get_width()/2/BLOCK_SIZE)
 player_grid_y = int(screen.get_height()/2/BLOCK_SIZE)
+snake_body = [(player_grid_x, player_grid_y)]
 player_pos = pg.Vector2(player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2, player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2)
 move_timer = 0
 direction = pg.Vector2(0, 0)
@@ -62,8 +63,10 @@ while running:
     screen.fill(BACKGROUND_COLOR)
 
     draw_grid()
-    for i in range(PLAYER_LENGTH):
-        pg.draw.circle(screen, PLAYER_COLOR, player_pos + pg.Vector2(i * BLOCK_SIZE, 0), PLAYER_RADIUS)
+
+    for body_part in snake_body:
+        body_part_pos = pg.Vector2(body_part[0] * BLOCK_SIZE + BLOCK_SIZE/2, body_part[1] * BLOCK_SIZE + BLOCK_SIZE/2)
+        pg.draw.circle(screen, PLAYER_COLOR, body_part_pos, PLAYER_RADIUS)
     
     pg.draw.circle(screen, FOOD_COLOR, food_pos, FOOD_RADIUS) #draw the food
 
@@ -84,12 +87,22 @@ while running:
             direction = next_direction
         
         if direction != pg.Vector2(0, 0):
-            player_grid_x += direction.x
-            player_grid_y += direction.y
-            move_timer = 0
+            player_grid_x = snake_body[0][0]
+            player_grid_y = snake_body[0][1]
 
-        player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
-        player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
+            player_grid_x += int(direction.x)
+            player_grid_y += int(direction.y)
+
+            snake_body.insert(0, (player_grid_x, player_grid_y))
+
+            if len(snake_body) > PLAYER_LENGTH:
+                snake_body.pop()
+        
+
+            player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
+            player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
+
+            move_timer = 0
 
         food_grid_x = int(food_pos.x - BLOCK_SIZE/2)/BLOCK_SIZE
         food_grid_y = int(food_pos.y - BLOCK_SIZE/2)/BLOCK_SIZE
@@ -97,6 +110,9 @@ while running:
         if food_grid_x == player_grid_x and food_grid_y == player_grid_y:
             food_pos = spawn_food()
             PLAYER_LENGTH += 1
+
+        player_grid_x = snake_body[0][0]
+        player_grid_y = snake_body[0][1]
 
         if  player_grid_x < 0:
             player_grid_x = WIDTH//BLOCK_SIZE - 1
@@ -106,6 +122,11 @@ while running:
             player_grid_y = HEIGHT//BLOCK_SIZE - 1
         if player_grid_y >= HEIGHT//BLOCK_SIZE:
             player_grid_y = 0
+
+        if len(snake_body) > 0:
+            snake_body[0] = (player_grid_x, player_grid_y)
+            player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
+            player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
 
 
     #RENDER GAME HERE

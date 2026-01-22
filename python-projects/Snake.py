@@ -1,7 +1,7 @@
 import pygame as pg #import pygame library
 
 #Constants
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 1200, 700
 FPS = 60
 PLAYER_SPEED = 300
 PLAYER_RADIUS = 15
@@ -11,6 +11,7 @@ WINDOW_TITLE = "Snake"
 BLOCK_SIZE = 30
 GRID_COLOR = "black"
 GRID_WIDTH = 1
+MOVE_DELAY = 0.15 #Time between moves
 
 #Function to draw the grid
 def draw_grid():
@@ -29,7 +30,10 @@ dt = 0
 
 
 #Player Position
-player_pos = pg.Vector2(screen.get_width()/2, screen.get_height()/2) 
+player_grid_x = int(screen.get_width()/2/BLOCK_SIZE)
+player_grid_y = int(screen.get_height()/2/BLOCK_SIZE)
+player_pos = pg.Vector2(player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2, player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2)
+move_timer = 0
 
 #Main Game Loop
 while running:
@@ -38,27 +42,41 @@ while running:
             running = False
     
     screen.fill(BACKGROUND_COLOR)
+
     draw_grid()
     pg.draw.circle(screen, PLAYER_COLOR, player_pos, PLAYER_RADIUS) #draw the player
 
-    keys = pg.key.get_pressed()
-    if keys[pg.K_w]:
-        player_pos.y -= PLAYER_SPEED * dt
-    if keys[pg.K_s]:
-        player_pos.y += PLAYER_SPEED * dt
-    if keys[pg.K_a]:
-        player_pos.x -= PLAYER_SPEED * dt
-    if keys[pg.K_d]:
-        player_pos.x += PLAYER_SPEED * dt
 
-    if player_pos.x < 0:
-        player_pos.x = WIDTH
-    if player_pos.x > WIDTH:
-        player_pos.x = 0
-    if player_pos.y < 0:
-        player_pos.y = HEIGHT
-    if player_pos.y > HEIGHT:
-        player_pos.y = 0
+
+    move_timer += dt
+    if move_timer >= MOVE_DELAY:
+        keys = pg.key.get_pressed()
+        if keys[pg.K_w]:
+            player_grid_y -= 1
+            move_timer = 0
+        if keys[pg.K_s]:
+            player_grid_y += 1
+            move_timer = 0
+        if keys[pg.K_a]:
+            player_grid_x -= 1
+            move_timer = 0
+        if keys[pg.K_d]:
+            player_grid_x += 1
+            move_timer = 0
+        
+
+        player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
+        player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
+
+        if  player_grid_x < 0:
+            player_grid_x = WIDTH//BLOCK_SIZE - 1
+        if player_grid_x >= WIDTH//BLOCK_SIZE:
+            player_grid_x = 0
+        if player_grid_y < 0:
+            player_grid_y = HEIGHT//BLOCK_SIZE - 1
+        if player_grid_y >= HEIGHT//BLOCK_SIZE:
+            player_grid_y = 0
+
 
     #RENDER GAME HERE
     pg.display.flip()

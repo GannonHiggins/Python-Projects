@@ -62,11 +62,12 @@ while running:
     
     screen.fill(BACKGROUND_COLOR)
 
-    draw_grid()
+   # draw_grid()
 
     for body_part in snake_body:
         body_part_pos = pg.Vector2(body_part[0] * BLOCK_SIZE + BLOCK_SIZE/2, body_part[1] * BLOCK_SIZE + BLOCK_SIZE/2)
-        pg.draw.circle(screen, PLAYER_COLOR, body_part_pos, PLAYER_RADIUS)
+        #pg.draw.circle(screen, PLAYER_COLOR, body_part_pos, PLAYER_RADIUS)
+        pg.draw.rect(screen, PLAYER_COLOR, (body_part[0] * BLOCK_SIZE, body_part[1] * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
     
     pg.draw.circle(screen, FOOD_COLOR, food_pos, FOOD_RADIUS) #draw the food
 
@@ -93,7 +94,16 @@ while running:
             player_grid_x += int(direction.x)
             player_grid_y += int(direction.y)
 
-            snake_body.insert(0, (player_grid_x, player_grid_y))
+            new_head = (player_grid_x, player_grid_y) #new head position
+
+            body_to_check = snake_body[:-1] if len(snake_body) > 1 else []
+
+            if new_head in body_to_check:
+                running = False
+                print("Game Over")
+                break
+
+            snake_body.insert(0, new_head)
 
             if len(snake_body) > PLAYER_LENGTH:
                 snake_body.pop()
@@ -110,7 +120,7 @@ while running:
         if food_grid_x == player_grid_x and food_grid_y == player_grid_y:
             food_pos = spawn_food()
             PLAYER_LENGTH += 1
-
+        
         player_grid_x = snake_body[0][0]
         player_grid_y = snake_body[0][1]
 
@@ -127,6 +137,7 @@ while running:
             snake_body[0] = (player_grid_x, player_grid_y)
             player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
             player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
+
 
 
     #RENDER GAME HERE

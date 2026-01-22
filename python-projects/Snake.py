@@ -55,6 +55,8 @@ pg.display.set_caption(WINDOW_TITLE)  # Set the window title
 clock = pg.time.Clock()  # Create clock object to control frame rate
 running = True  # Game loop control variable
 dt = 0  # Delta time - time since last frame (in seconds)
+score = 0 #score variable
+font = pg.font.SysFont("Arial", 30)
 
 # ========== GAME STATE INITIALIZATION ==========
 # Calculate starting position (center of screen in grid coordinates)
@@ -78,9 +80,11 @@ while running:
         if event.type == pg.QUIT:
             running = False  # Exit game loop when window is closed
     
+
+    score_text = font.render(f"Score: {score}", True, "white")
     # Clear the screen with background color
     screen.fill(BACKGROUND_COLOR)
-
+    screen.blit(score_text, (10, 10))
     # Optional: Draw grid for visual reference (currently commented out)
     # draw_grid()
 
@@ -142,7 +146,7 @@ while running:
             # If collision detected, end the game
             if new_head in body_to_check:
                 running = False
-                print("Game Over - Snake collided with itself!")
+                print("Game Over")
                 break
 
             # Add new head to front of snake body
@@ -168,6 +172,7 @@ while running:
         if food_grid_x == player_grid_x and food_grid_y == player_grid_y:
             food_pos = spawn_food()  # Spawn new food at random location
             PLAYER_LENGTH += 1  # Increase snake length
+            score += 1
         
         # ========== BOUNDARY WRAPPING ==========
         # Get current head position

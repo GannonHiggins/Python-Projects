@@ -1,4 +1,5 @@
 import pygame as pg #import pygame library
+import random
 
 #Constants
 WIDTH, HEIGHT = 1200, 700
@@ -12,6 +13,10 @@ BLOCK_SIZE = 30
 GRID_COLOR = "black"
 GRID_WIDTH = 1
 MOVE_DELAY = 0.15 #Time between moves
+PLAYER_LENGTH = 1
+FOOD_RADIUS = 10
+FOOD_COLOR = "red"
+
 
 #Function to draw the grid
 def draw_grid():
@@ -19,6 +24,15 @@ def draw_grid():
         pg.draw.line(screen, GRID_COLOR, (x, 0), (x, HEIGHT), GRID_WIDTH)
     for y in range(0, HEIGHT, BLOCK_SIZE):
         pg.draw.line(screen, GRID_COLOR, (0, y), (WIDTH, y), GRID_WIDTH)
+
+
+def spawn_food():
+    grid_width = WIDTH//BLOCK_SIZE
+    grid_height = HEIGHT//BLOCK_SIZE
+    food_grid_x = random.randint(0, grid_width - 1)
+    food_grid_y = random.randint(0, grid_height - 1)
+    food_pos = pg.Vector2(food_grid_x * BLOCK_SIZE + BLOCK_SIZE/2, food_grid_y * BLOCK_SIZE + BLOCK_SIZE/2)
+    return food_pos
 
 # Initialize Pygame
 pg.init()
@@ -34,6 +48,10 @@ player_grid_x = int(screen.get_width()/2/BLOCK_SIZE)
 player_grid_y = int(screen.get_height()/2/BLOCK_SIZE)
 player_pos = pg.Vector2(player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2, player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2)
 move_timer = 0
+direction = pg.Vector2(0, 0)
+next_direction = pg.Vector2(0, 0)
+
+food_pos = spawn_food()
 
 #Main Game Loop
 while running:
@@ -44,29 +62,41 @@ while running:
     screen.fill(BACKGROUND_COLOR)
 
     draw_grid()
-    pg.draw.circle(screen, PLAYER_COLOR, player_pos, PLAYER_RADIUS) #draw the player
-
+    for i in range(PLAYER_LENGTH):
+        pg.draw.circle(screen, PLAYER_COLOR, player_pos + pg.Vector2(i * BLOCK_SIZE, 0), PLAYER_RADIUS)
+    
+    pg.draw.circle(screen, FOOD_COLOR, food_pos, FOOD_RADIUS) #draw the food
 
 
     move_timer += dt
     if move_timer >= MOVE_DELAY:
         keys = pg.key.get_pressed()
-        if keys[pg.K_w]:
-            player_grid_y -= 1
-            move_timer = 0
-        if keys[pg.K_s]:
-            player_grid_y += 1
-            move_timer = 0
-        if keys[pg.K_a]:
-            player_grid_x -= 1
-            move_timer = 0
-        if keys[pg.K_d]:
-            player_grid_x += 1
-            move_timer = 0
+        if keys[pg.K_w] and direction != pg.Vector2(0, 1):
+            next_direction = pg.Vector2(0, -1)
+        if keys[pg.K_s] and direction != pg.Vector2(0, -1):
+            next_direction = pg.Vector2(0, 1)
+        if keys[pg.K_a] and direction != pg.Vector2(1, 0):
+            next_direction = pg.Vector2(-1, 0)
+        if keys[pg.K_d] and direction != pg.Vector2(-1, 0):
+            next_direction = pg.Vector2(1, 0)
+
+        if next_direction != pg.Vector2(0, 0):
+            direction = next_direction
         
+        if direction != pg.Vector2(0, 0):
+            player_grid_x += direction.x
+            player_grid_y += direction.y
+            move_timer = 0
 
         player_pos.x = player_grid_x * BLOCK_SIZE + BLOCK_SIZE/2
         player_pos.y = player_grid_y * BLOCK_SIZE + BLOCK_SIZE/2
+
+        food_grid_x = int(food_pos.x - BLOCK_SIZE/2)/BLOCK_SIZE
+        food_grid_y = int(food_pos.y - BLOCK_SIZE/2)/BLOCK_SIZE
+
+        if food_grid_x == player_grid_x and food_grid_y == player_grid_y:
+            food_pos = spawn_food()
+            PLAYER_LENGTH += 1
 
         if  player_grid_x < 0:
             player_grid_x = WIDTH//BLOCK_SIZE - 1

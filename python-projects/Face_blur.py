@@ -1,9 +1,8 @@
 # ========== IMPORTS ==========
 import cv2 as cv  # OpenCV library for image processing and face detection
-import numpy as np  # NumPy for numerical operations and array handling
 import tkinter as tk  # Tkinter for creating the GUI window
 from tkinter import filedialog  # File dialog for selecting image files
-import os as os  # Operating system interface for file path operations
+import os  # Operating system interface for file path operations
 import matplotlib.pyplot as plt  # Matplotlib for plotting images
 
 
@@ -43,7 +42,8 @@ def Plot_Image(image):
 
 def process_image():
     """
-    Loads and displays the selected image using OpenCV.
+    Loads and processes the selected image, blurring detected faces.
+    Displays the result using matplotlib.
     Only processes if a file is selected.
     """
     global selected_file_path  # Access the global variable

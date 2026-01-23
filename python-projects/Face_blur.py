@@ -52,31 +52,20 @@ def process_image():
     if selected_file_path:
         # Load the image
         image = cv.imread(selected_file_path)
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-        cascade_path = cv.data.haarcascades + 'haarcascade_frontalface_default.xml'
-        face_detect = cv.CascadeClassifier(cascade_path)
 
-        faces = face_detect.detectMultiScale(image, 1.3, 5)
-
-        
-        for (x, y, w, h) in faces:
-            cv.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)        
-            # Crop the face
-            roi = image[y:y+h, x:x+w]
-            roi = cv.medianBlur(roi, 15)
-            image[y:y+h, x:x+w] = roi
-        
-        
-        Plot_Image(image)
-
-        # Check if image is loaded
         if image is not None:
-            # Display the image
-            cv.imshow("Selected Image", image)
-            # Wait for a key press
-            cv.waitKey(0)
-            # Close the window
-            cv.destroyAllWindows()
+            image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+            cascade_path = cv.data.haarcascades + 'haarcascade_frontalface_default.xml'
+            face_detect = cv.CascadeClassifier(cascade_path)
+
+            faces = face_detect.detectMultiScale(image, 1.3, 5)
+            for (x, y, w, h) in faces:     
+                # Crop the face
+                roi = image[y:y+h, x:x+w]
+                roi = cv.medianBlur(roi, 15)
+                image[y:y+h, x:x+w] = roi
+            
+            Plot_Image(image)
         else:
             # Show error message if image couldn't be loaded
             path_label.config(text = f"Error: Could not load image from {selected_file_path}")

@@ -4,7 +4,7 @@ import numpy as np  # NumPy for numerical operations and array handling
 import tkinter as tk  # Tkinter for creating the GUI window
 from tkinter import filedialog  # File dialog for selecting image files
 import os as os  # Operating system interface for file path operations
-
+import matplotlib.pyplot as plt  # Matplotlib for plotting images
 
 
 # Global variable to store the file path
@@ -34,6 +34,11 @@ def file_upload():
         path_label.config(text = "No file selected")
         selected_file_path = None  # Clear the path
 
+def Plot_Image(image):
+    plt.imshow(image)
+    plt.axis("off")
+    plt.show()
+
 
 
 def process_image():
@@ -47,7 +52,23 @@ def process_image():
     if selected_file_path:
         # Load the image
         image = cv.imread(selected_file_path)
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        cascade_path = cv.data.haarcascades + 'haarcascade_frontalface_default.xml'
+        face_detect = cv.CascadeClassifier(cascade_path)
+
+        faces = face_detect.detectMultiScale(image, 1.3, 5)
+
         
+        for (x, y, w, h) in faces:
+            cv.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)        
+            # Crop the face
+            roi = image[y:y+h, x:x+w]
+            roi = cv.medianBlur(roi, 15)
+            image[y:y+h, x:x+w] = roi
+        
+        
+        Plot_Image(image)
+
         # Check if image is loaded
         if image is not None:
             # Display the image

@@ -35,19 +35,6 @@ def file_upload():
         selected_file_path = None  # Clear the path
 
 
-# GUI SETUP
-# Create the main Tkinter window
-root = tk.Tk()
-root.title("Image Viewer")  # Set window title
-root.geometry("600x400")  # Set window size (width x height)
-
-# Create a label to display the file path
-path_label = tk.Label(root, text = "No file selected")
-path_label.pack(pady = 10)  # Add padding and pack into window
-
-# Create a button to trigger file selection
-select_button = tk.Button(root, text = "Select Image", command = file_upload)
-select_button.pack(pady = 10)  # Add padding and pack into window
 
 def process_image():
     """
@@ -75,6 +62,20 @@ def process_image():
     else:
         # Show if no file is selected
         path_label.config(text = "Please select an image first")
+
+# GUI SETUP
+# Create the main Tkinter window
+root = tk.Tk()
+root.title("Image Viewer")  # Set window title
+root.geometry("600x400")  # Set window size (width x height)
+
+# Create a label to display the file path
+path_label = tk.Label(root, text = "No file selected")
+path_label.pack(pady = 10)  # Add padding and pack into window
+
+# Create a button to trigger file selection
+select_button = tk.Button(root, text = "Select Image", command = file_upload)
+select_button.pack(pady = 10)  # Add padding and pack into window
 
 # Create a button to process the selected image
 process_button = tk.Button(root, text = "Process Image", command = process_image)

@@ -30,6 +30,7 @@ def Window():
     root.mainloop()
 
 
+
 def on_search_button_click(search_entry, card_list):
     """Handle the Search button click; fetch and display matching cards."""
     query = search_entry.get().strip()
@@ -46,17 +47,23 @@ def on_search_button_click(search_entry, card_list):
 
     # Clear previous results before showing the new search.
     card_list.delete("1.0", "end")
+    current_card = None
+
     if not cards:
         card_list.insert("end", f"No cards found for '{query}'.\n")
         return
-
+    current_card = cards[0]
     for card in cards:
         card_list.insert("end", f"{card.name} — {card.id}\n")
-        card_list.bind("<Button-1>", lambda event: display_card(card))
+    
+    card_list.bind("<Button-1>", lambda event: display_card(current_card, card_list))
 
-def display_card(card):
+
+def display_card(current_card, card_list):
     """TODO: Display detailed information about a single card."""
-    return 0
+    print("Card clicked:", current_card.name)
+    print("Card ID:", current_card.id)
+    print("Card image:", current_card.get_image_url)
 
 
 

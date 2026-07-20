@@ -74,8 +74,8 @@ def update_frame():
             video_label.config(image=img_tk)
             video_label.image = img_tk
             
-            # Schedule next frame (33ms = ~30 FPS)
-            video_label.after(33, update_frame)
+            # Schedule next frame (33ms = ~30 FPS, 16ms = ~60 FPS)
+            video_label.after(16, update_frame)
         except Exception as e:
             print(f"Error: {e}")
             stop_stream()  # Gracefully handle capture errors

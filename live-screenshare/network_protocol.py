@@ -58,11 +58,14 @@ def create_server_socket(host, port):
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Allow immediate reuse of address (prevents "address already in use" errors on restart)
         server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_sock.settimeout(CONNECTION_TIMEOUT)
         server_sock.bind((host, port))
         server_sock.listen(1)
         print(f"Server listening on {host}:{port}")
         conn, addr = server_sock.accept()
         print(f"Connected by {addr}")
+        # Remove timeout for data transfer (we want blocking I/O for frames)
+        conn.settimeout(None)
         # Close listening socket but keep connection open for data transfer
         server_sock.close()
         return conn
@@ -71,6 +74,59 @@ def create_server_socket(host, port):
         return None
 
 def create_client_socket(host, port):
-    """Create a client socket."""
-    # Add your client socket creation logic here
-    pass
+    """Create a client socket and connect to server."""
+    try:
+        client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_sock.settimeout(CONNECTION_TIMEOUT)
+        client_sock.connect((host, port))
+        print(f"Connected to {host}:{port}")
+        # Remove timeout after connection for blocking I/O during frame transfer
+        client_sock.settimeout(None)
+        return client_sock
+    except Exception as e:
+        print(f"Error creating client socket: {e}")
+        return None
+
+def close_socket(sock):
+    """Safely close a socket with proper shutdown."""
+    if sock is None:
+        return
+    try:
+        # Shutdown both send and receive to signal connection termination
+        sock.shutdown(socket.SHUT_RDWR)
+    except:
+        pass
+    try:
+        sock.close()
+    except:
+        pass
+
+def is_socket_connected(sock):
+    """Check if a socket is still connected."""
+    if sock is None:
+        return False
+    original_timeout = None
+    try:
+        # Temporarily set short timeout for non-blocking check
+        original_timeout = sock.gettimeout()
+        sock.settimeout(0.1)
+        # Use MSG_PEEK to check connection without consuming data
+        data = sock.recv(1, socket.MSG_PEEK | socket.MSG_DONTWAIT)
+        # Restore original timeout
+        sock.settimeout(original_timeout)
+        # Empty bytes means socket closed, any data means connected
+        return data != b''
+    except BlockingIOError:
+        # No data available but socket is alive
+        if original_timeout is not None:
+            sock.settimeout(original_timeout)
+        return True
+    except:
+        # Any other error means disconnected
+        # Restore timeout before returning
+        if original_timeout is not None:
+            try:
+                sock.settimeout(original_timeout)
+            except:
+                pass
+        return False
